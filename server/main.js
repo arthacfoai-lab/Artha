@@ -22,6 +22,16 @@ const {
   getAllAgents
 } = require('./agents');
 
+const {
+  setPending,
+  getPending,
+  clearPending,
+  hasPending
+} = require('./sessions');
+
+const {
+  runVoiceEntrySkill
+} = require('../skills/voice-entry-parser/skill');
 const app = express();
 
 const PORT =
@@ -292,7 +302,47 @@ app.post('/message', async (req, res) => {
     phone,
     platform
   } = req.body;
+// ======================================
+// CHECK PENDING CONFIRMATION
+// ======================================
 
+if (hasPending(phone)) {
+
+  console.log(
+    '✓ Pending confirmation found'
+  );
+
+  const pending =
+    getPending(phone);
+
+  const result =
+    await runVoiceEntrySkill(
+
+      message,
+
+      'f72f8844-ac5b-4b06-8cd7-4c3fb742897d',
+
+      pending.pendingEntry
+
+    );
+
+  // Clear session after response
+
+  clearPending(phone);
+
+  return res.json({
+
+    success: true,
+
+    agent: 'LEKHAK',
+
+    reply: result.message,
+
+    confirmationFlow: true
+
+  });
+
+}
   // ==================================
   // INPUT VALIDATION
   // ==================================
@@ -350,7 +400,52 @@ app.post('/message', async (req, res) => {
     const intent =
       detectIntent(message);
 
+  // ======================================
+// LEKHAK ENTRY FLOW
+// ======================================
+
+if (routing.agent === 'LEKHAK') {
+
+  const result =
+  await runVoiceEntrySkill(
+
+    message,
+
+    'f72f8844-ac5b-4b06-8cd7-4c3fb742897d'
+
+  );
+
+  // Save pending confirmation
+
+  if (result.needsConfirmation) {
+
+    setPending(phone, {
+
+      pendingEntry:
+        result.pendingEntry
+
+    });
+
     console.log(
+      '✓ Pending session saved'
+    );
+
+  }
+
+  return res.json({
+
+    success: true,
+
+    agent: 'LEKHAK',
+
+    reply: result.message,
+
+    routing
+
+  });
+
+} 
+ console.log(
 
       `→ Agent: ${routing.agent}` +
       ` | Intent: ${intent}`

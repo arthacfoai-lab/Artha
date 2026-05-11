@@ -14,7 +14,7 @@ const { v4: uuidv4 } = require('uuid');
 
 const DB_PATH = path.join(
   __dirname,
-  '../database/artha.db'
+  '../../database/artha.db'
 );
 
 // =====================================
