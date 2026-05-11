@@ -8,7 +8,10 @@ const morgan = require('morgan');
 const { v4: uuidv4 } = require('uuid');
 
 const Database = require('better-sqlite3');
-
+const {
+  checkPaperclip,
+  reportTask
+} = require('../integrations/paperclip');
 const {
   routeMessage,
   detectIntent
@@ -64,7 +67,10 @@ try {
     '✓ Database connected:',
     DB_PATH
   );
-
+const {
+  checkPaperclip,
+  reportTask
+} = require('../integrations/paperclip');
 } catch (err) {
 
   console.error(
@@ -133,7 +139,7 @@ CREATE TABLE IF NOT EXISTS journal_entries (
 `);
 
 console.log('✓ Tables ready');
-
+checkPaperclip();
 // ======================================
 // HELPERS
 // ======================================
@@ -368,7 +374,21 @@ app.post('/message', async (req, res) => {
         }
 
       );
+// ======================================
+// REPORT TO PAPERCLIP
+// ======================================
 
+reportTask(
+
+  routing.agent,
+
+  message,
+
+  'completed',
+
+  agentResponse.reply
+
+);
     // ================================
     // AUDIT LOG
     // ================================
