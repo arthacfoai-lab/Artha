@@ -1,12 +1,10 @@
-//
+
 // ======================================
 // ARTHA AI — SMART ROUTER v2
 // ======================================
 
-const ROUTING_RULES = {
-
-  TEJAS: [
-
+const ROUTING_RULES =  {
+   TEJAS: [
     'gst',
     'tax',
     'filing',
@@ -14,6 +12,7 @@ const ROUTING_RULES = {
     'gstr',
     'notice',
     'itc',
+    'invoice gst',
     'gstin',
     'cgst',
     'sgst',
@@ -28,9 +27,9 @@ const ROUTING_RULES = {
     'input credit',
     'tax rate',
     'gst rate',
-    'gst calculate',
-    'invoice gst'
-
+    'gst kab',
+    'gst kitna',
+    'gst calculate'
   ],
 
   VIVEK: [
@@ -245,7 +244,39 @@ function routeMessage(message) {
     message
       .toLowerCase()
       .trim();
+// ==================================
+// PRIORITY OVERRIDES
+// ==================================
 
+if (
+
+  msg.includes('gst') ||
+
+  msg.includes('cgst') ||
+
+  msg.includes('sgst') ||
+
+  msg.includes('igst') ||
+
+  msg.includes('gstr') ||
+
+  msg.includes('tax')
+
+) {
+
+  return {
+
+    agent: 'TEJAS',
+
+    confidence: 'high',
+
+    score: 999,
+
+    matched: ['priority-gst']
+
+  };
+
+}
   console.log(
     `→ Routing: "${msg.substring(0, 80)}"`
   );

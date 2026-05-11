@@ -272,7 +272,7 @@ app.get('/health', (req, res) => {
 
     service: 'ARTHA AI',
 
-    version: '1.0.0',
+    version: '2.0.0',
 
     timestamp:
       new Date().toISOString(),
@@ -666,7 +666,36 @@ app.get('/agents', (req, res) => {
   });
 
 });
+// ======================================
+// COMPLIANCE ENDPOINT
+// ======================================
 
+app.get('/compliance', (req, res) => {
+
+  res.json({
+
+    deadlines: [
+
+      {
+        type: 'GSTR-1',
+        due: '11th monthly'
+      },
+
+      {
+        type: 'GSTR-3B',
+        due: '20th monthly'
+      },
+
+      {
+        type: 'TDS',
+        due: '7th monthly'
+      }
+
+    ]
+
+  });
+
+});
 // ======================================
 // START SERVER
 // ======================================
